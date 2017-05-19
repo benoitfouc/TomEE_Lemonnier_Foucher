@@ -1,0 +1,5 @@
+- name: déplacer l'appli web ROOT par défaut
+  command: creates="{{tomee_dir}}/webapps/doc" mv {{tomee_dir}}/webapps/ROOT {{tomee_dir}}/webapps/doc
+
+- name: relancer Tomee
+  service: name=tomee8 state=restarted

@@ -1,0 +1,49 @@
+---
+- hosts: ci-server
+  #roles:
+    #- jenkins-server
+- hosts: tomee
+  tasks:
+    - name: installation du jdk8
+      package: name=openjdk-8-jdk-headless state=present
+    
+    - name: Creation du groupe
+      group:
+        name: tomee
+        state: present
+    
+    - name: creation du compte pour Tomee
+      user:
+        name: tomee
+        group: tomee
+        system: yes
+    
+    - name: Creation du dossier /opt/tomee avec owner et groupe tomee
+      file:
+        path: /opt/tomee
+        state: directory
+        owner: tomee
+        group: tomee
+    
+    - name: Telechargement de l'archive TomEE
+      get_url:
+        url: http://repo.maven.apache.org/maven2/org/apache/tomee/apache-tomee/7.0.3/apache-tomee-7.0.3-plus.tar.gz
+        dest: /home/tomee/
+    
+    - name: Unzip et installation de TomEE dans /opt/tomee
+      command: /bin/tar xzvf /home/tomee/apache-tomee-7.0.3-plus.tar.gz -C /opt/tomee --strip-components=1
+    
+    - name: tomee proprietaire de /opt/tomee/webapps/
+      shell: chown -R tomee /opt/tomee/webapps/
+    
+    - name: tomee proprietaire de /opt/tomee/work/
+      shell: chown -R tomee /opt/tomee/work/
+    
+    - name: tomee proprietaire de /opt/tomee/temp/
+      shell: chown -R tomee /opt/tomee/temp/
+    
+    - name: tomee proprietaire de /opt/tomee/logs/
+      shell: chown -R tomee /opt/tomee/logs/
+    
+    - name: groupe tomee acces lecture seule + exe sur /opt/tomee/conf/
+      shell: chmod -R g+r /opt/tomee/conf | chmod g+x /opt/tomee/conf
